@@ -1,154 +1,88 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>বিজ্ঞাপন দিন | Quail Bazar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>কোয়েল বাজার - বিজ্ঞাপন দিন</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f3f7f3;font-family:Arial,sans-serif;color:#222}
-header{background:#176b3a;color:white;padding:20px;text-align:center}
-header h1{margin:0}
-.container{max-width:600px;margin:20px auto;padding:18px;background:white;border-radius:12px}
-h2{text-align:center;color:#176b3a}
-label{display:block;margin-top:14px;font-weight:bold}
-input,select,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #ccc;border-radius:7px;font-size:15px}
-textarea{min-height:90px}
-button{padding:12px;border:0;border-radius:7px;cursor:pointer}
-.lang{background:white;color:#176b3a}
-.submit{width:100%;margin-top:20px;background:#176b3a;color:white;font-size:17px}
-.home{display:block;text-align:center;margin:15px;color:#176b3a}
-.note{font-size:13px;color:#666;margin-top:10px}
+body{font-family:Arial,sans-serif;background:#f3f6f4;margin:0;padding:18px}
+.container{max-width:550px;margin:auto;background:white;padding:20px;border-radius:12px}
+h2{text-align:center;color:#167344}
+input,select,textarea,button{width:100%;padding:12px;margin:8px 0;box-sizing:border-box;font-size:16px}
+button{background:#167344;color:white;border:0;border-radius:7px}
 </style>
 </head>
 <body>
-
-<header>
-<h1>🐦 কোয়েল বাজার</h1>
-<p>QUAIL BAZAR</p>
-<button class="lang" onclick="changeLang()" id="langBtn">English</button>
-</header>
-
 <div class="container">
-<h2 id="title">নতুন বিজ্ঞাপন দিন</h2>
+<h2>🐦 কোয়েল বাজার</h2>
+<h3>বিজ্ঞাপন দিন</h3>
 
 <form id="adForm">
-
-<label id="categoryLabel">পণ্যের ক্যাটাগরি</label>
-<select required id="category">
-<option value="">ক্যাটাগরি নির্বাচন করুন</option>
-<option>জীবিত কোয়েল</option>
-<option>কোয়েল বাচ্চা</option>
-<option>কোয়েলের ডিম</option>
-<option>কোয়েল খাবার</option>
-<option>খামারের সরঞ্জাম</option>
+<select id="category" required>
+<option value="">বিভাগ নির্বাচন করুন</option>
+<option value="Live quail">জীবিত কোয়েল</option>
+<option value="Chicks">কোয়েলের বাচ্চা</option>
+<option value="Eggs">কোয়েলের ডিম</option>
+<option value="Feed">কোয়েলের খাবার</option>
+<option value="Equipment">খামারের সরঞ্জাম</option>
 </select>
 
-<label id="ageLabel">পাখির বয়স (প্রযোজ্য হলে)</label>
-<select id="age">
-<option value="">বয়স নির্বাচন করুন</option>
-<option>০–৬ দিন</option>
-<option>৭–২০ দিন</option>
-<option>২১–৩০ দিন</option>
-<option>৩১–৪০ দিন</option>
-<option>৪১ দিন বা বেশি</option>
-<option>ডিম দেওয়া মাদি</option>
-<option>পুরুষ কোয়েল</option>
-</select>
+<input id="farm_name" placeholder="খামার/দোকানের নাম" required>
+<input id="product_name" placeholder="পণ্যের নাম" required>
+<input id="quantity" placeholder="পরিমাণ">
+<input id="price" type="number" step="0.01" placeholder="একক দাম">
+<input id="district" placeholder="জেলা">
+<input id="area" placeholder="উপজেলা/এলাকা">
+<input id="phone" placeholder="মোবাইল নম্বর" required>
+<input id="whatsapp" placeholder="WhatsApp নম্বর">
+<textarea id="description" placeholder="বিজ্ঞাপনের বিবরণ"></textarea>
 
-<label id="shopLabel">খামার বা দোকানের নাম</label>
-<input type="text" required placeholder="নাম লিখুন">
-
-<label id="productLabel">পণ্যের নাম</label>
-<input type="text" required placeholder="পণ্যের নাম লিখুন">
-
-<label id="quantityLabel">পরিমাণ</label>
-<input type="number" min="1" required placeholder="কতটি বা কত কেজি">
-
-<label id="priceLabel">প্রতি ইউনিটের দাম (টাকা)</label>
-<input type="number" min="0" required placeholder="দাম লিখুন">
-
-<label id="districtLabel">জেলা</label>
-<input type="text" required placeholder="জেলার নাম">
-
-<label id="upazilaLabel">উপজেলা ও এলাকা</label>
-<input type="text" required placeholder="উপজেলা / গ্রাম">
-
-<label id="phoneLabel">মোবাইল নম্বর</label>
-<input type="tel" required placeholder="01XXXXXXXXX">
-
-<label id="whatsappLabel">WhatsApp নম্বর</label>
-<input type="tel" placeholder="WhatsApp নম্বর">
-
-<label id="photoLabel">পণ্যের ছবি</label>
-<input type="file" accept="image/*" multiple>
-
-<label id="descriptionLabel">বিস্তারিত বিবরণ</label>
-<textarea placeholder="পণ্যের বিস্তারিত লিখুন"></textarea>
-
-<button type="submit" class="submit" id="submitBtn">বিজ্ঞাপন জমা দিন</button>
-<p class="note" id="note">এটি প্রাথমিক ফর্ম। বিজ্ঞাপন সংরক্ষণের জন্য পরে ডাটাবেজ যুক্ত করতে হবে।</p>
+<button type="submit" id="submitBtn">বিজ্ঞাপন জমা দিন</button>
 </form>
+<p id="message"></p>
+<a href="index.html">হোম পেজে ফিরুন</a>
 </div>
 
-<a class="home" href="index.html" id="homeLink">← হোমপেজে ফিরে যান</a>
-
 <script>
-let english=false;
+const SUPABASE_URL = "https://xvawrgfrzfgkolaetnsw.supabase.co";
+sb_publishable_fgvGkn8TpONnZtcLfsY4tg_ejqsGoRc
 
-function changeLang(){
-english=!english;
-const words=english?{
-btn:"বাংলা",title:"Post a New Advertisement",
-category:"Product Category",age:"Bird Age (if applicable)",
-shop:"Farm or Shop Name",product:"Product Name",
-quantity:"Quantity",price:"Price per Unit (BDT)",
-district:"District",upazila:"Upazila and Area",
-phone:"Mobile Number",whatsapp:"WhatsApp Number",
-photo:"Product Photos",description:"Description",
-submit:"Submit Advertisement",
-note:"This is an initial form. A database is needed to save advertisements.",
-home:"← Back to Home"
-}:{
-btn:"English",title:"নতুন বিজ্ঞাপন দিন",
-category:"পণ্যের ক্যাটাগরি",age:"পাখির বয়স (প্রযোজ্য হলে)",
-shop:"খামার বা দোকানের নাম",product:"পণ্যের নাম",
-quantity:"পরিমাণ",price:"প্রতি ইউনিটের দাম (টাকা)",
-district:"জেলা",upazila:"উপজেলা ও এলাকা",
-phone:"মোবাইল নম্বর",whatsapp:"WhatsApp নম্বর",
-photo:"পণ্যের ছবি",description:"বিস্তারিত বিবরণ",
-submit:"বিজ্ঞাপন জমা দিন",
-note:"এটি প্রাথমিক ফর্ম। বিজ্ঞাপন সংরক্ষণের জন্য পরে ডাটাবেজ যুক্ত করতে হবে।",
-home:"← হোমপেজে ফিরে যান"
-};
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-document.getElementById("langBtn").innerText=words.btn;
-document.getElementById("title").innerText=words.title;
-document.getElementById("categoryLabel").innerText=words.category;
-document.getElementById("ageLabel").innerText=words.age;
-document.getElementById("shopLabel").innerText=words.shop;
-document.getElementById("productLabel").innerText=words.product;
-document.getElementById("quantityLabel").innerText=words.quantity;
-document.getElementById("priceLabel").innerText=words.price;
-document.getElementById("districtLabel").innerText=words.district;
-document.getElementById("upazilaLabel").innerText=words.upazila;
-document.getElementById("phoneLabel").innerText=words.phone;
-document.getElementById("whatsappLabel").innerText=words.whatsapp;
-document.getElementById("photoLabel").innerText=words.photo;
-document.getElementById("descriptionLabel").innerText=words.description;
-document.getElementById("submitBtn").innerText=words.submit;
-document.getElementById("note").innerText=words.note;
-document.getElementById("homeLink").innerText=words.home;
-}
+document.getElementById("adForm").addEventListener("submit", async function(e){
+  e.preventDefault();
 
-document.getElementById("adForm").addEventListener("submit",function(e){
-e.preventDefault();
-alert(english?
-"Thank you! The form is ready, but database saving is not connected yet.":
-"ধন্যবাদ! ফর্ম তৈরি হয়েছে, তবে বিজ্ঞাপন সংরক্ষণের ডাটাবেজ এখনো যুক্ত হয়নি।");
+  const message = document.getElementById("message");
+  const button = document.getElementById("submitBtn");
+  button.disabled = true;
+  message.textContent = "জমা হচ্ছে...";
+
+  const ad = {
+    category: document.getElementById("category").value,
+    farm_name: document.getElementById("farm_name").value,
+    product_name: document.getElementById("product_name").value,
+    quantity: document.getElementById("quantity").value,
+    price: document.getElementById("price").value || null,
+    district: document.getElementById("district").value,
+    area: document.getElementById("area").value,
+    phone: document.getElementById("phone").value,
+    whatsapp: document.getElementById("whatsapp").value,
+    description: document.getElementById("description").value
+  };
+
+  const {error} = await db.from("ads").insert([ad]);
+
+  if(error){
+    message.textContent = "সমস্যা হয়েছে: " + error.message;
+  } else {
+    message.textContent = "বিজ্ঞাপন জমা হয়েছে। অনুমোদনের অপেক্ষায় থাকবে।";
+    document.getElementById("adForm").reset();
+  }
+
+  button.disabled = false;
 });
 </script>
-
 </body>
 </html>
+sb_publishable_fgvGkn8TpONnZtcLfsY4tg_ejqsGoRc
