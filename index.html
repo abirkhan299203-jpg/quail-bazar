@@ -1,12 +1,10 @@
 
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>কোয়েল বাজার | QUAIL BAZAR</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f4f7f4;color:#222}
@@ -28,7 +26,6 @@ h2{padding:0 15px;font-size:20px}
 footer{text-align:center;padding:20px;color:#666}
 </style>
 </head>
-
 <body>
 
 <header>
@@ -94,8 +91,7 @@ alert(english?'Please enter a search word.':'আগে কিছু লিখু
 return;
 }
 
-alert((english?'You searched for: ':'আপনি খুঁজছেন: ')+keyword+
-(english?'\nAd listings will be connected later.':'\nবিজ্ঞাপনের তালিকা পরে যুক্ত করা হবে।'));
+window.location.href='ads.html?search='+encodeURIComponent(keyword);
 }
 
 document.getElementById('search').addEventListener('keydown',function(e){
