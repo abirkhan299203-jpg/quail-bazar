@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>বিজ্ঞাপনের তালিকা | QUAIL BAZAR</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f4f7f4;
+ color:#222;
+}
+header{
+ background:#176b3a;
+ color:white;
+ padding:20px 15px;
+ text-align:center;
+}
+header h1{margin:0}
+.top{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ padding:12px;
+ gap:8px;
+}
+button{
+ border:0;
+ border-radius:7px;
+ padding:11px 14px;
+ cursor:pointer;
+}
+.lang{background:#176b3a;color:white}
+.home{
+ display:block;
+ margin:12px;
+ padding:12px;
+ background:#176b3a;
+ color:white;
+ text-align:center;
+ text-decoration:none;
+ border-radius:8px;
+}
+h2{padding:0 15px}
+.filters{
+ padding:12px;
+}
+.filters input,.filters select{
+ width:100%;
+ padding:13px;
+ margin-bottom:10px;
+ border:1px solid #ccc;
+ border-radius:8px;
+ font-size:16px;
+}
+.ads{
+ padding:12px;
+}
+.ad{
+ background:white;
+ padding:15px;
+ margin-bottom:14px;
+ border-radius:10px;
+ box-shadow:0 2px 6px #ddd;
+}
+.ad h3{margin-top:0;color:#176b3a}
+.price{
+ color:#176b3a;
+ font-size:20px;
+ font-weight:bold;
+}
+.contact{
+ display:inline-block;
+ background:#176b3a;
+ color:white;
+ padding:10px 15px;
+ border-radius:7px;
+ text-decoration:none;
+}
+.note{
+ padding:15px;
+ margin:12px;
+ background:#fff3cd;
+ border-radius:8px;
+ line-height:1.5;
+}
+footer{
+ text-align:center;
+ padding:20px;
+ color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🐦 কোয়েল বাজার</h1>
+<p>QUAIL BAZAR - Bangladesh</p>
+</header>
+
+<div class="top">
+<strong id="pageTitle">সকল বিজ্ঞাপন</strong>
+<button class="lang" onclick="changeLang()" id="langBtn">English</button>
+</div>
+
+<a href="index.html" class="home" id="homeBtn">← হোম পেজে ফিরে যান</a>
+
+<h2 id="filterTitle">বিজ্ঞাপন খুঁজুন</h2>
+
+<div class="filters">
+<input type="search" id="search" placeholder="পণ্যের নাম লিখুন...">
+
+<select id="category">
+<option value="all">সকল ক্যাটাগরি</option>
+<option value="bird">জীবিত কোয়েল</option>
+<option value="chick">কোয়েল বাচ্চা</option>
+<option value="egg">কোয়েলের ডিম</option>
+<option value="feed">কোয়েল খাবার</option>
+<option value="equipment">খামারের সরঞ্জাম</option>
+</select>
+
+<button onclick="filterAds()" style="background:#176b3a;color:white;width:100%" id="searchBtn">🔍 খুঁজুন</button>
+</div>
+
+<h2 id="listTitle">বিজ্ঞাপনের তালিকা</h2>
+
+<div class="ads" id="adsList">
+
+<div class="ad" data-category="bird">
+<h3 class="product">জীবিত কোয়েল পাখি</h3>
+<p class="price">৳ ২৫ টাকা / পিস</p>
+<p class="quantity">পরিমাণ: ১০০টি</p>
+<p class="address">ঠিকানা: ঢাকা, বাংলাদেশ</p>
+<p>বিক্রেতা: নমুনা খামার</p>
+<a href="#" class="contact">যোগাযোগ করুন</a>
+</div>
+
+<div class="ad" data-category="chick">
+<h3 class="product">কোয়েল বাচ্চা</h3>
+<p class="price">৳ ৮ টাকা / পিস</p>
+<p class="quantity">পরিমাণ: ২০০টি</p>
+<p class="address">ঠিকানা: গাজীপুর, বাংলাদেশ</p>
+<p>বিক্রেতা: নমুনা হ্যাচারি</p>
+<a href="#" class="contact">যোগাযোগ করুন</a>
+</div>
+
+<div class="ad" data-category="egg">
+<h3 class="product">কোয়েলের ডিম</h3>
+<p class="price">৳ ৪ টাকা / পিস</p>
+<p class="quantity">পরিমাণ: ১০০০টি</p>
+<p class="address">ঠিকানা: ময়মনসিংহ, বাংলাদেশ</p>
+<p>বিক্রেতা: নমুনা খামার</p>
+<a href="#" class="contact">যোগাযোগ করুন</a>
+</div>
+
+<div class="ad" data-category="feed">
+<h3 class="product">কোয়েল লেয়ার খাবার</h3>
+<p class="price">৳ ২৬০০ টাকা / বস্তা</p>
+<p class="quantity">পরিমাণ: ৫০ কেজি</p>
+<p class="address">ঠিকানা: কুমিল্লা, বাংলাদেশ</p>
+<p>বিক্রেতা: নমুনা ফিড শপ</p>
+<a href="#" class="contact">যোগাযোগ করুন</a>
+</div>
+
+<div class="ad" data-category="equipment">
+<h3 class="product">কোয়েল পানির পাত্র</h3>
+<p class="price">৳ ১৫০ টাকা / পিস</p>
+<p class="quantity">পরিমাণ: ২০টি</p>
+<p class="address">ঠিকানা: ঢাকা, বাংলাদেশ</p>
+<p>বিক্রেতা: নমুনা দোকান</p>
+<a href="#" class="contact">যোগাযোগ করুন</a>
+</div>
+
+</div>
+
+<div class="note" id="note">
+এগুলো শুধু নমুনা বিজ্ঞাপন। প্রকৃত বিক্রেতাদের বিজ্ঞাপন যুক্ত করার ব্যবস্থা পরে তৈরি করা হবে।
+</div>
+
+<footer>QUAIL BAZAR © 2026</footer>
+
+<script>
+let english=false;
+
+function filterAds(){
+ const keyword=document.getElementById('search').value.toLowerCase().trim();
+ const category=document.getElementById('category').value;
+ const ads=document.querySelectorAll('.ad');
+ let count=0;
+
+ ads.forEach(ad=>{
+  const text=ad.innerText.toLowerCase();
+  const matchText=text.includes(keyword);
+  const matchCategory=category==='all'||ad.dataset.category===category;
+
+  if(matchText&&matchCategory){
+   ad.style.display='block';
+   count++;
+  }else{
+   ad.style.display='none';
+  }
+ });
+
+ if(count===0){
+  alert(english?'No sample ads found.':'কোনো বিজ্ঞাপন পাওয়া যায়নি।');
+ }
+}
+
+document.getElementById('search').addEventListener('keydown',function(e){
+ if(e.key==='Enter')filterAds();
+});
+
+function changeLang(){
+ english=!english;
+
+ document.getElementById('langBtn').innerText=english?'বাংলা':'English';
+ document.getElementById('pageTitle').innerText=english?'All Advertisements':'সকল বিজ্ঞাপন';
+ document.getElementById('homeBtn').innerText=english?'← Back to Home':'← হোম পেজে ফিরে যান';
+ document.getElementById('filterTitle').innerText=english?'Search Ads':'বিজ্ঞাপন খুঁজুন';
+ document.getElementById('listTitle').innerText=english?'Advertisement List':'বিজ্ঞাপনের তালিকা';
+ document.getElementById('search').placeholder=english?'Enter product name...':'পণ্যের নাম লিখুন...';
+ document.getElementById('searchBtn').innerText=english?'🔍 Search':'🔍 খুঁজুন';
+ document.getElementById('note').innerText=english?'These are sample ads only. Real seller advertisements will be connected later.':'এগুলো শুধু নমুনা বিজ্ঞাপন। প্রকৃত বিক্রেতাদের বিজ্ঞাপন যুক্ত করার ব্যবস্থা পরে তৈরি করা হবে।';
+
+ const options=document.getElementById('category').options;
+ const bn=['সকল ক্যাটাগরি','জীবিত কোয়েল','কোয়েল বাচ্চা','কোয়েলের ডিম','কোয়েল খাবার','খামারের সরঞ্জাম'];
+ const en=['All Categories','Live Quail','Quail Chicks','Quail Eggs','Quail Feed','Farm Equipment'];
+
+ for(let i=0;i<options.length;i++){
+  options[i].text=english?en[i]:bn[i];
+ }
+
+ const names=[
+  ['জীবিত কোয়েল পাখি','Live Quail'],
+  ['কোয়েল বাচ্চা','Quail Chicks'],
+  ['কোয়েলের ডিম','Quail Eggs'],
+  ['কোয়েল লেয়ার খাবার','Quail Layer Feed'],
+  ['কোয়েল পানির পাত্র','Quail Water Feeder']
+ ];
+
+ document.querySelectorAll('.product').forEach((item,i)=>{
+  item.innerText=names[i][english?1:0];
+ });
+
+ document.querySelectorAll('.contact').forEach(item=>{
+  item.innerText=english?'Contact Seller':'যোগাযোগ করুন';
+ });
+}
+</script>
+
+</body>
+</html>
