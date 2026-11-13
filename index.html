@@ -1,21 +1,24 @@
 
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>কোয়েল বাজার | QUAIL BAZAR</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f4f7f4;color:#222}
 header{background:#176b3a;color:white;padding:20px 15px;text-align:center}
 header h1{margin:0;font-size:27px}
 header p{margin:6px 0 0}
-.top{display:flex;justify-content:space-between;align-items:center;padding:12px}
-button{border:0;border-radius:7px;padding:10px 14px;cursor:pointer}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px;gap:10px}
+button{border:0;border-radius:7px;padding:12px;cursor:pointer}
 .lang{background:#176b3a;color:white}
-.search{padding:12px}
-.search input{width:100%;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+.search{display:flex;gap:8px;padding:12px}
+.search input{flex:1;min-width:0;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+.search button{background:#176b3a;color:white;font-size:16px}
 h2{padding:0 15px;font-size:20px}
 .categories{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px}
 .category{background:white;padding:20px 10px;text-align:center;border-radius:10px;box-shadow:0 2px 6px #ddd;font-weight:bold}
@@ -25,6 +28,7 @@ h2{padding:0 15px;font-size:20px}
 footer{text-align:center;padding:20px;color:#666}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -39,6 +43,7 @@ footer{text-align:center;padding:20px;color:#666}
 
 <div class="search">
 <input type="search" id="search" placeholder="পণ্য বা বিজ্ঞাপন খুঁজুন...">
+<button onclick="searchAds()" id="searchBtn">🔍 খুঁজুন</button>
 </div>
 
 <h2 id="catTitle">পণ্যের ক্যাটাগরি</h2>
@@ -62,8 +67,10 @@ footer{text-align:center;padding:20px;color:#666}
 
 <script>
 let english=false;
+
 function changeLang(){
 english=!english;
+
 document.getElementById('langBtn').innerText=english?'বাংলা':'English';
 document.getElementById('welcome').innerText=english?'Welcome to Bangladesh Quail Market':'বাংলাদেশের কোয়েল বাজারে স্বাগতম';
 document.getElementById('catTitle').innerText=english?'Product Categories':'পণ্যের ক্যাটাগরি';
@@ -76,7 +83,27 @@ document.getElementById('postBtn').innerText=english?'+ Post an Ad':'＋ বি�
 document.getElementById('aboutTitle').innerText=english?'About Quail Bazar':'কোয়েল বাজার কী?';
 document.getElementById('aboutText').innerText=english?'A marketplace connecting quail farmers, buyers and sellers directly.':'এখানে বাংলাদেশের কোয়েল খামারি, ক্রেতা ও বিক্রেতারা সরাসরি যোগাযোগ করতে পারবেন।';
 document.getElementById('search').placeholder=english?'Search products or ads...':'পণ্য বা বিজ্ঞাপন খুঁজুন...';
+document.getElementById('searchBtn').innerText=english?'🔍 Search':'🔍 খুঁজুন';
 }
+
+function searchAds(){
+const keyword=document.getElementById('search').value.trim();
+
+if(!keyword){
+alert(english?'Please enter a search word.':'আগে কিছু লিখুন।');
+return;
+}
+
+alert((english?'You searched for: ':'আপনি খুঁজছেন: ')+keyword+
+(english?'\nAd listings will be connected later.':'\nবিজ্ঞাপনের তালিকা পরে যুক্ত করা হবে।'));
+}
+
+document.getElementById('search').addEventListener('keydown',function(e){
+if(e.key==='Enter'){
+searchAds();
+}
+});
 </script>
+
 </body>
 </html>
