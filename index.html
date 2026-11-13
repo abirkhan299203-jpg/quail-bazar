@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>কোয়েল বাজার | QUAIL BAZAR</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f4;color:#222}
+header{background:#176b3a;color:white;padding:20px 15px;text-align:center}
+header h1{margin:0;font-size:27px}
+header p{margin:6px 0 0}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px}
+button{border:0;border-radius:7px;padding:10px 14px;cursor:pointer}
+.lang{background:#176b3a;color:white}
+.search{padding:12px}
+.search input{width:100%;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+h2{padding:0 15px;font-size:20px}
+.categories{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px}
+.category{background:white;padding:20px 10px;text-align:center;border-radius:10px;box-shadow:0 2px 6px #ddd;font-weight:bold}
+.category span{display:block;font-size:30px;margin-bottom:8px}
+.post{display:block;background:#176b3a;color:white;margin:15px;padding:15px;text-align:center;text-decoration:none;border-radius:8px;font-weight:bold}
+.info{background:white;margin:15px;padding:15px;border-radius:10px;line-height:1.6}
+footer{text-align:center;padding:20px;color:#666}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🐦 কোয়েল বাজার</h1>
+<p>QUAIL BAZAR - Bangladesh</p>
+</header>
+
+<div class="top">
+<strong id="welcome">বাংলাদেশের কোয়েল বাজারে স্বাগতম</strong>
+<button class="lang" onclick="changeLang()" id="langBtn">English</button>
+</div>
+
+<div class="search">
+<input type="search" id="search" placeholder="পণ্য বা বিজ্ঞাপন খুঁজুন...">
+</div>
+
+<h2 id="catTitle">পণ্যের ক্যাটাগরি</h2>
+
+<div class="categories">
+<div class="category"><span>🐦</span><span id="c1">জীবিত কোয়েল</span></div>
+<div class="category"><span>🐣</span><span id="c2">কোয়েল বাচ্চা</span></div>
+<div class="category"><span>🥚</span><span id="c3">কোয়েলের ডিম</span></div>
+<div class="category"><span>🌾</span><span id="c4">কোয়েল খাবার</span></div>
+<div class="category"><span>🛠️</span><span id="c5">খামারের সরঞ্জাম</span></div>
+</div>
+
+<a class="post" href="#" id="postBtn">＋ বিজ্ঞাপন দিন</a>
+
+<div class="info">
+<h3 id="aboutTitle">কোয়েল বাজার কী?</h3>
+<p id="aboutText">এখানে বাংলাদেশের কোয়েল খামারি, ক্রেতা ও বিক্রেতারা সরাসরি যোগাযোগ করতে পারবেন।</p>
+</div>
+
+<footer>QUAIL BAZAR © 2026</footer>
+
+<script>
+let english=false;
+function changeLang(){
+english=!english;
+document.getElementById('langBtn').innerText=english?'বাংলা':'English';
+document.getElementById('welcome').innerText=english?'Welcome to Bangladesh Quail Market':'বাংলাদেশের কোয়েল বাজারে স্বাগতম';
+document.getElementById('catTitle').innerText=english?'Product Categories':'পণ্যের ক্যাটাগরি';
+document.getElementById('c1').innerText=english?'Live Quail':'জীবিত কোয়েল';
+document.getElementById('c2').innerText=english?'Quail Chicks':'কোয়েল বাচ্চা';
+document.getElementById('c3').innerText=english?'Quail Eggs':'কোয়েলের ডিম';
+document.getElementById('c4').innerText=english?'Quail Feed':'কোয়েল খাবার';
+document.getElementById('c5').innerText=english?'Farm Equipment':'খামারের সরঞ্জাম';
+document.getElementById('postBtn').innerText=english?'+ Post an Ad':'＋ বিজ্ঞাপন দিন';
+document.getElementById('aboutTitle').innerText=english?'About Quail Bazar':'কোয়েল বাজার কী?';
+document.getElementById('aboutText').innerText=english?'A marketplace connecting quail farmers, buyers and sellers directly.':'এখানে বাংলাদেশের কোয়েল খামারি, ক্রেতা ও বিক্রেতারা সরাসরি যোগাযোগ করতে পারবেন।';
+document.getElementById('search').placeholder=english?'Search products or ads...':'পণ্য বা বিজ্ঞাপন খুঁজুন...';
+}
+</script>
+</body>
+</html>
