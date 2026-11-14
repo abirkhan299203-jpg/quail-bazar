@@ -21,8 +21,9 @@ h2{padding:0 15px}
 .ad{background:white;padding:15px;margin-bottom:14px;border-radius:10px;box-shadow:0 2px 6px #ddd}
 .ad h3{margin-top:0;color:#176b3a}
 .price{color:#176b3a;font-size:20px;font-weight:bold}
-.contact{display:inline-block;background:#176b3a;color:white;padding:10px 15px;border-radius:7px;text-decoration:none}
-.note{padding:15px;margin:12px;background:#fff3cd;border-radius:8px;line-height:1.5}
+.contact{display:inline-block;background:#176b3a;color:white;padding:10px 15px;border-radius:7px;text-decoration:none;margin:5px 5px 0 0}
+.whatsapp{background:#168b49}
+.message{text-align:center;padding:20px;color:#555}
 footer{text-align:center;padding:20px;color:#666}
 </style>
 </head>
@@ -47,9 +48,9 @@ footer{text-align:center;padding:20px;color:#666}
 
 <select id="category">
 <option value="all">সকল ক্যাটাগরি</option>
-<option value="bird">জীবিত কোয়েল</option>
-<option value="chick">কোয়েল বাচ্চা</option>
-<option value="egg">কোয়েলের ডিম</option>
+<option value="live quail">জীবিত কোয়েল</option>
+<option value="chicks">কোয়েল বাচ্চা</option>
+<option value="eggs">কোয়েলের ডিম</option>
 <option value="feed">কোয়েল খাবার</option>
 <option value="equipment">খামারের সরঞ্জাম</option>
 </select>
@@ -58,143 +59,165 @@ footer{text-align:center;padding:20px;color:#666}
 </div>
 
 <h2 id="listTitle">বিজ্ঞাপনের তালিকা</h2>
-
 <div class="ads" id="adsList">
-
-<div class="ad" data-category="bird">
-<h3 class="product">জীবিত কোয়েল পাখি</h3>
-<p class="price">৳ ২৫ টাকা / পিস</p>
-<p>পরিমাণ: ১০০টি</p>
-<p>ঠিকানা: ঢাকা, বাংলাদেশ</p>
-<p>বিক্রেতা: নমুনা খামার</p>
-<a href="#" class="contact">যোগাযোগ করুন</a>
-</div>
-
-<div class="ad" data-category="chick">
-<h3 class="product">কোয়েল বাচ্চা</h3>
-<p class="price">৳ ৮ টাকা / পিস</p>
-<p>পরিমাণ: ২০০টি</p>
-<p>ঠিকানা: গাজীপুর, বাংলাদেশ</p>
-<p>বিক্রেতা: নমুনা হ্যাচারি</p>
-<a href="#" class="contact">যোগাযোগ করুন</a>
-</div>
-
-<div class="ad" data-category="egg">
-<h3 class="product">কোয়েলের ডিম</h3>
-<p class="price">৳ ৪ টাকা / পিস</p>
-<p>পরিমাণ: ১০০০টি</p>
-<p>ঠিকানা: ময়মনসিংহ, বাংলাদেশ</p>
-<p>বিক্রেতা: নমুনা খামার</p>
-<a href="#" class="contact">যোগাযোগ করুন</a>
-</div>
-
-<div class="ad" data-category="feed">
-<h3 class="product">কোয়েল লেয়ার খাবার</h3>
-<p class="price">৳ ২৬০০ টাকা / বস্তা</p>
-<p>পরিমাণ: ৫০ কেজি</p>
-<p>ঠিকানা: কুমিল্লা, বাংলাদেশ</p>
-<p>বিক্রেতা: নমুনা ফিড শপ</p>
-<a href="#" class="contact">যোগাযোগ করুন</a>
-</div>
-
-<div class="ad" data-category="equipment">
-<h3 class="product">কোয়েল পানির পাত্র</h3>
-<p class="price">৳ ১৫০ টাকা / পিস</p>
-<p>পরিমাণ: ২০টি</p>
-<p>ঠিকানা: ঢাকা, বাংলাদেশ</p>
-<p>বিক্রেতা: নমুনা দোকান</p>
-<a href="#" class="contact">যোগাযোগ করুন</a>
-</div>
-
-</div>
-
-<div class="note" id="note">
-এগুলো শুধু নমুনা বিজ্ঞাপন। প্রকৃত বিক্রেতাদের বিজ্ঞাপন যুক্ত করার ব্যবস্থা পরে তৈরি করা হবে।
+<p class="message" id="loading">বিজ্ঞাপন লোড হচ্ছে...</p>
 </div>
 
 <footer>QUAIL BAZAR © 2026</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-let english=false;
+const SUPABASE_URL = "https://xvawrgfrzfgkolaetnsw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_fgvGkn8TpONnZtcLfsY4tg_ejqsGoRc";
 
-function filterAds(){
- const keyword=document.getElementById('search').value.toLowerCase().trim();
- const category=document.getElementById('category').value;
- const ads=document.querySelectorAll('.ad');
- let count=0;
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
- ads.forEach(ad=>{
-  const text=ad.innerText.toLowerCase();
-  const matchText=text.includes(keyword);
-  const matchCategory=category==='all'||ad.dataset.category===category;
+let english = false;
+let allAds = [];
 
-  if(matchText&&matchCategory){
-   ad.style.display='block';
-   count++;
-  }else{
-   ad.style.display='none';
-  }
- });
-
- document.getElementById('noResult')?.remove();
-
- if(count===0){
-  const message=document.createElement('p');
-  message.id='noResult';
-  message.style.textAlign='center';
-  message.innerText=english?'No ads found.':'কোনো বিজ্ঞাপন পাওয়া যায়নি।';
-  document.getElementById('adsList').appendChild(message);
- }
+function escapeHTML(value) {
+ return String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ })[char]);
 }
 
-document.getElementById('search').addEventListener('keydown',function(e){
- if(e.key==='Enter')filterAds();
-});
+function categoryName(value) {
+ const c = String(value || "").toLowerCase().trim();
 
-function changeLang(){
- english=!english;
+ const names = {
+  "live quail":["জীবিত কোয়েল","Live Quail"],
+  "bird":["জীবিত কোয়েল","Live Quail"],
+  "chicks":["কোয়েল বাচ্চা","Quail Chicks"],
+  "chick":["কোয়েল বাচ্চা","Quail Chicks"],
+  "eggs":["কোয়েলের ডিম","Quail Eggs"],
+  "egg":["কোয়েলের ডিম","Quail Eggs"],
+  "feed":["কোয়েল খাবার","Quail Feed"],
+  "equipment":["খামারের সরঞ্জাম","Farm Equipment"]
+ };
 
- document.getElementById('langBtn').innerText=english?'বাংলা':'English';
- document.getElementById('pageTitle').innerText=english?'All Advertisements':'সকল বিজ্ঞাপন';
- document.getElementById('homeBtn').innerText=english?'← Back to Home':'← হোম পেজে ফিরে যান';
- document.getElementById('filterTitle').innerText=english?'Search Ads':'বিজ্ঞাপন খুঁজুন';
- document.getElementById('listTitle').innerText=english?'Advertisement List':'বিজ্ঞাপনের তালিকা';
- document.getElementById('search').placeholder=english?'Enter product name...':'পণ্যের নাম লিখুন...';
- document.getElementById('searchBtn').innerText=english?'🔍 Search':'🔍 খুঁজুন';
- document.getElementById('note').innerText=english?'These are sample ads only. Real seller advertisements will be connected later.':'এগুলো শুধু নমুনা বিজ্ঞাপন। প্রকৃত বিক্রেতাদের বিজ্ঞাপন যুক্ত করার ব্যবস্থা পরে তৈরি করা হবে।';
-
- const options=document.getElementById('category').options;
- const bn=['সকল ক্যাটাগরি','জীবিত কোয়েল','কোয়েল বাচ্চা','কোয়েলের ডিম','কোয়েল খাবার','খামারের সরঞ্জাম'];
- const en=['All Categories','Live Quail','Quail Chicks','Quail Eggs','Quail Feed','Farm Equipment'];
-
- for(let i=0;i<options.length;i++){
-  options[i].text=english?en[i]:bn[i];
- }
-
- const names=[
-  ['জীবিত কোয়েল পাখি','Live Quail'],
-  ['কোয়েল বাচ্চা','Quail Chicks'],
-  ['কোয়েলের ডিম','Quail Eggs'],
-  ['কোয়েল লেয়ার খাবার','Quail Layer Feed'],
-  ['কোয়েল পানির পাত্র','Quail Water Feeder']
- ];
-
- document.querySelectorAll('.product').forEach((item,i)=>{
-  item.innerText=names[i][english?1:0];
- });
-
- document.querySelectorAll('.contact').forEach(item=>{
-  item.innerText=english?'Contact Seller':'যোগাযোগ করুন';
- });
+ return names[c] || [value || "অন্যান্য","Other"];
 }
 
-const params=new URLSearchParams(window.location.search);
-const initialSearch=params.get('search');
+function renderAds(list) {
+ const container = document.getElementById("adsList");
 
-if(initialSearch){
- document.getElementById('search').value=initialSearch;
+ if (!list.length) {
+  container.innerHTML = `<p class="message">${
+   english ? "No advertisements found." : "কোনো বিজ্ঞাপন পাওয়া যায়নি।"
+  }</p>`;
+  return;
+ }
+
+ container.innerHTML = list.map(ad => {
+  const phone = String(ad.phone || "").replace(/[^\d+]/g,"");
+  const whatsapp = String(ad.whatsapp || ad.phone || "").replace(/\D/g,"");
+  const category = categoryName(ad.category);
+
+  return `
+  <div class="ad">
+   <h3>${escapeHTML(ad.product_name)}</h3>
+   <p>${escapeHTML(category[english ? 1 : 0])}</p>
+   <p class="price">৳ ${escapeHTML(ad.price)} / ${
+    english ? "unit" : "প্রতি ইউনিট"
+   }</p>
+   <p>${english ? "Quantity:" : "পরিমাণ:"}
+   ${escapeHTML(ad.quantity)}</p>
+   <p>${english ? "Seller:" : "বিক্রেতা:"}
+   ${escapeHTML(ad.farm_name)}</p>
+   <p>${english ? "Location:" : "ঠিকানা:"}
+   ${escapeHTML(ad.area)}, ${escapeHTML(ad.district)}</p>
+   <p>${escapeHTML(ad.description)}</p>
+   ${phone ? `<a class="contact" href="tel:${escapeHTML(phone)}">${english ? "Call Seller" : "ফোন করুন"}</a>` : ""}
+   ${whatsapp ? `<a class="contact whatsapp" target="_blank" rel="noopener" href="https://wa.me/${escapeHTML(whatsapp)}">${english ? "WhatsApp" : "হোয়াটসঅ্যাপ"}</a>` : ""}
+  </div>`;
+ }).join("");
+}
+
+function filterAds() {
+ const keyword = document.getElementById("search").value.toLowerCase().trim();
+ const category = document.getElementById("category").value;
+
+ const filtered = allAds.filter(ad => {
+  const text = [
+   ad.product_name,ad.farm_name,ad.district,
+   ad.area,ad.description,ad.category
+  ].join(" ").toLowerCase();
+
+  const matchText = text.includes(keyword);
+  const actualCategory = String(ad.category || "").toLowerCase().trim();
+
+  const matchCategory = category === "all" ||
+   actualCategory === category ||
+   (category === "live quail" && actualCategory === "bird") ||
+   (category === "chicks" && actualCategory === "chick") ||
+   (category === "eggs" && actualCategory === "egg");
+
+  return matchText && matchCategory;
+ });
+
+ renderAds(filtered);
+}
+
+async function loadAds() {
+ const container = document.getElementById("adsList");
+
+ const { data, error } = await db
+  .from("ads")
+  .select("*")
+  .eq("status","approved")
+  .order("created_at",{ascending:false});
+
+ if (error) {
+  console.error(error);
+  container.innerHTML = `<p class="message">${
+   english ? "Could not load advertisements. Please try again." :
+   "বিজ্ঞাপন লোড করা যায়নি। আবার চেষ্টা করুন।"
+  }</p>`;
+  return;
+ }
+
+ allAds = data || [];
  filterAds();
 }
+
+document.getElementById("search").addEventListener("input",filterAds);
+document.getElementById("category").addEventListener("change",filterAds);
+
+document.getElementById("search").addEventListener("keydown",function(e){
+ if(e.key === "Enter") filterAds();
+});
+
+function changeLang() {
+ english = !english;
+
+ document.getElementById("langBtn").innerText = english ? "বাংলা" : "English";
+ document.getElementById("pageTitle").innerText = english ? "All Advertisements" : "সকল বিজ্ঞাপন";
+ document.getElementById("homeBtn").innerText = english ? "← Back to Home" : "← হোম পেজে ফিরে যান";
+ document.getElementById("filterTitle").innerText = english ? "Search Ads" : "বিজ্ঞাপন খুঁজুন";
+ document.getElementById("listTitle").innerText = english ? "Advertisement List" : "বিজ্ঞাপনের তালিকা";
+ document.getElementById("search").placeholder = english ? "Enter product name..." : "পণ্যের নাম লিখুন...";
+ document.getElementById("searchBtn").innerText = english ? "🔍 Search" : "🔍 খুঁজুন";
+
+ const options = document.getElementById("category").options;
+ const bn = ["সকল ক্যাটাগরি","জীবিত কোয়েল","কোয়েল বাচ্চা","কোয়েলের ডিম","কোয়েল খাবার","খামারের সরঞ্জাম"];
+ const en = ["All Categories","Live Quail","Quail Chicks","Quail Eggs","Quail Feed","Farm Equipment"];
+
+ for(let i=0;i<options.length;i++) {
+  options[i].text = english ? en[i] : bn[i];
+ }
+
+ filterAds();
+}
+
+const params = new URLSearchParams(window.location.search);
+const initialSearch = params.get("search");
+
+if(initialSearch) {
+ document.getElementById("search").value = initialSearch;
+}
+
+loadAds();
 </script>
 
 </body>
