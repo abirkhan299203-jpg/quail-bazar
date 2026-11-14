@@ -22,7 +22,8 @@ button{border:0;border-radius:7px;padding:12px;cursor:pointer}
 .search button{background:#176b3a;color:white;font-size:16px}
 h2{padding:0 15px;font-size:20px}
 .categories{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px}
-.category{background:white;padding:20px 10px;text-align:center;border-radius:10px;box-shadow:0 2px 6px #ddd;font-weight:bold}
+.category{display:block;background:white;padding:20px 10px;text-align:center;border-radius:10px;box-shadow:0 2px 6px #ddd;font-weight:bold;color:#222;text-decoration:none;cursor:pointer}
+.category:active{background:#e3f2e8}
 .category span{display:block;font-size:30px;margin-bottom:8px}
 .post{display:block;background:#176b3a;color:white;margin:15px;padding:15px;text-align:center;text-decoration:none;border-radius:8px;font-weight:bold}
 .info{background:white;margin:15px;padding:15px;border-radius:10px;line-height:1.6}
@@ -59,11 +60,27 @@ footer{text-align:center;padding:20px;color:#666}
 <h2 id="catTitle">পণ্যের ক্যাটাগরি</h2>
 
 <div class="categories">
-<div class="category"><span>🐦</span><span id="c1">জীবিত কোয়েল</span></div>
-<div class="category"><span>🐣</span><span id="c2">কোয়েল বাচ্চা</span></div>
-<div class="category"><span>🥚</span><span id="c3">কোয়েলের ডিম</span></div>
-<div class="category"><span>🌾</span><span id="c4">কোয়েল খাবার</span></div>
-<div class="category"><span>🛠️</span><span id="c5">খামারের সরঞ্জাম</span></div>
+
+<a class="category" href="ads.html?search=জীবিত%20কোয়েল">
+<span>🐦</span><span id="c1">জীবিত কোয়েল</span>
+</a>
+
+<a class="category" href="ads.html?search=কোয়েল%20বাচ্চা">
+<span>🐣</span><span id="c2">কোয়েল বাচ্চা</span>
+</a>
+
+<a class="category" href="ads.html?search=কোয়েলের%20ডিম">
+<span>🥚</span><span id="c3">কোয়েলের ডিম</span>
+</a>
+
+<a class="category" href="ads.html?search=কোয়েল%20খাবার">
+<span>🌾</span><span id="c4">কোয়েল খাবার</span>
+</a>
+
+<a class="category" href="ads.html?search=খামারের%20সরঞ্জাম">
+<span>🛠️</span><span id="c5">খামারের সরঞ্জাম</span>
+</a>
+
 </div>
 
 <a class="post" href="post-ad.html" id="postBtn">＋ বিজ্ঞাপন দিন</a>
@@ -161,7 +178,7 @@ function renderAds(ads) {
 
         <div class="ad-actions">
           ${phone ? `<a href="tel:${encodeURIComponent(phone)}">${english ? "Call" : "📞 কল করুন"}</a>` : ""}
-          ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener noreferrer">${english ? "WhatsApp" : "WhatsApp"}</a>` : ""}
+          ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ""}
         </div>
       </div>
     `;
@@ -171,20 +188,16 @@ function renderAds(ads) {
 async function loadAds() {
   const loading = document.getElementById("loading");
 
-  loading.textContent = english
-    ? "Loading advertisements..."
-    : "বিজ্ঞাপন লোড হচ্ছে...";
-
   try {
     const { data, error } = await db
       .from("ads")
       .select("*")
-      .eq("status", "approved");
+      .eq("status", "approved")
+      .order("created_at", {ascending:false});
 
     if (error) throw error;
 
     allAds = data || [];
-
     loading.style.display = "none";
     renderAds(allAds);
 
@@ -196,30 +209,15 @@ async function loadAds() {
 }
 
 function searchAds() {
-  const keyword = document.getElementById("search").value.trim().toLowerCase();
+  const keyword = document.getElementById("search").value.trim();
 
   if (!keyword) {
-    renderAds(allAds);
+    window.location.href = "ads.html";
     return;
   }
 
-  const filtered = allAds.filter(ad => {
-    const text = [
-      ad.product_name,
-      ad.farm_name,
-      ad.category,
-      ad.district,
-      ad.area,
-      ad.description
-    ].join(" ").toLowerCase();
-
-    return text.includes(keyword);
-  });
-
-  renderAds(filtered);
+  window.location.href = "ads.html?search=" + encodeURIComponent(keyword);
 }
-
-document.getElementById("search").addEventListener("input", searchAds);
 
 document.getElementById("search").addEventListener("keydown", function(e) {
   if (e.key === "Enter") searchAds();
