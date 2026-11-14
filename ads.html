@@ -18,13 +18,17 @@ h2{padding:0 15px}
 .filters{padding:12px}
 .filters input,.filters select{width:100%;padding:13px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:16px}
 .ads{padding:12px}
-.ad{background:white;padding:15px;margin-bottom:14px;border-radius:10px;box-shadow:0 2px 6px #ddd}
-.ad h3{margin-top:0;color:#176b3a}
+.ad,.detail{background:white;padding:16px;margin-bottom:14px;border-radius:10px;box-shadow:0 2px 6px #ddd}
+.ad h3,.detail h2{margin-top:0;color:#176b3a}
 .price{color:#176b3a;font-size:20px;font-weight:bold}
 .contact{display:inline-block;background:#176b3a;color:white;padding:10px 15px;border-radius:7px;text-decoration:none;margin:5px 5px 0 0}
 .whatsapp{background:#168b49}
+.details-btn{display:block;background:#e6f3e9;color:#176b3a;padding:12px;text-align:center;text-decoration:none;border-radius:7px;margin-top:12px;font-weight:bold}
+.back-btn{display:block;background:#176b3a;color:white;padding:12px;text-align:center;text-decoration:none;border-radius:7px;margin:10px 0}
 .message{text-align:center;padding:20px;color:#555}
 footer{text-align:center;padding:20px;color:#666}
+.info{padding:10px 0;border-bottom:1px solid #eee;line-height:1.6}
+.info strong{color:#176b3a}
 </style>
 </head>
 <body>
@@ -41,6 +45,7 @@ footer{text-align:center;padding:20px;color:#666}
 
 <a href="index.html" class="home" id="homeBtn">← হোম পেজে ফিরে যান</a>
 
+<div id="listPage">
 <h2 id="filterTitle">বিজ্ঞাপন খুঁজুন</h2>
 
 <div class="filters">
@@ -60,7 +65,14 @@ footer{text-align:center;padding:20px;color:#666}
 
 <h2 id="listTitle">বিজ্ঞাপনের তালিকা</h2>
 <div class="ads" id="adsList">
-<p class="message" id="loading">বিজ্ঞাপন লোড হচ্ছে...</p>
+<p class="message">বিজ্ঞাপন লোড হচ্ছে...</p>
+</div>
+</div>
+
+<div id="detailPage" style="display:none;padding:12px">
+<div id="detailContent">
+<p class="message">বিজ্ঞাপনের বিস্তারিত লোড হচ্ছে...</p>
+</div>
 </div>
 
 <footer>QUAIL BAZAR © 2026</footer>
@@ -99,6 +111,16 @@ function categoryName(value) {
  return names[c] || [value || "অন্যান্য","Other"];
 }
 
+function contactButtons(ad) {
+ const phone = String(ad.phone || "").replace(/[^\d+]/g,"");
+ const whatsapp = String(ad.whatsapp || ad.phone || "").replace(/\D/g,"");
+
+ return `
+ ${phone ? `<a class="contact" href="tel:${escapeHTML(phone)}">${english ? "Call Seller" : "📞 ফোন করুন"}</a>` : ""}
+ ${whatsapp ? `<a class="contact whatsapp" target="_blank" rel="noopener" href="https://wa.me/${escapeHTML(whatsapp)}">${english ? "WhatsApp" : "WhatsApp-এ যোগাযোগ"}</a>` : ""}
+ `;
+}
+
 function renderAds(list) {
  const container = document.getElementById("adsList");
 
@@ -110,26 +132,21 @@ function renderAds(list) {
  }
 
  container.innerHTML = list.map(ad => {
-  const phone = String(ad.phone || "").replace(/[^\d+]/g,"");
-  const whatsapp = String(ad.whatsapp || ad.phone || "").replace(/\D/g,"");
   const category = categoryName(ad.category);
+  const detailsLink = `ads.html?id=${encodeURIComponent(ad.id)}`;
 
   return `
   <div class="ad">
    <h3>${escapeHTML(ad.product_name)}</h3>
    <p>${escapeHTML(category[english ? 1 : 0])}</p>
-   <p class="price">৳ ${escapeHTML(ad.price)} / ${
-    english ? "unit" : "প্রতি ইউনিট"
-   }</p>
-   <p>${english ? "Quantity:" : "পরিমাণ:"}
-   ${escapeHTML(ad.quantity)}</p>
-   <p>${english ? "Seller:" : "বিক্রেতা:"}
-   ${escapeHTML(ad.farm_name)}</p>
-   <p>${english ? "Location:" : "ঠিকানা:"}
-   ${escapeHTML(ad.area)}, ${escapeHTML(ad.district)}</p>
-   <p>${escapeHTML(ad.description)}</p>
-   ${phone ? `<a class="contact" href="tel:${escapeHTML(phone)}">${english ? "Call Seller" : "ফোন করুন"}</a>` : ""}
-   ${whatsapp ? `<a class="contact whatsapp" target="_blank" rel="noopener" href="https://wa.me/${escapeHTML(whatsapp)}">${english ? "WhatsApp" : "হোয়াটসঅ্যাপ"}</a>` : ""}
+   <p class="price">৳ ${escapeHTML(ad.price)} / ${english ? "unit" : "প্রতি ইউনিট"}</p>
+   <p>${english ? "Quantity:" : "পরিমাণ:"} ${escapeHTML(ad.quantity)}</p>
+   <p>${english ? "Seller:" : "বিক্রেতা:"} ${escapeHTML(ad.farm_name)}</p>
+   <p>${english ? "Location:" : "ঠিকানা:"} ${escapeHTML(ad.area)}, ${escapeHTML(ad.district)}</p>
+
+   <a class="details-btn" href="${detailsLink}">
+    ${english ? "View Full Details →" : "বিস্তারিত দেখুন →"}
+   </a>
   </div>`;
  }).join("");
 }
@@ -157,6 +174,91 @@ function filterAds() {
  });
 
  renderAds(filtered);
+}
+
+async function showDetails(id) {
+ document.getElementById("listPage").style.display = "none";
+ document.getElementById("detailPage").style.display = "block";
+ document.getElementById("pageTitle").innerText =
+  english ? "Advertisement Details" : "বিজ্ঞাপনের বিস্তারিত";
+
+ const content = document.getElementById("detailContent");
+
+ const { data, error } = await db
+  .from("ads")
+  .select("*")
+  .eq("id", id)
+  .eq("status","approved")
+  .maybeSingle();
+
+ if(error || !data) {
+  content.innerHTML = `<p class="message">${
+   english ? "Advertisement not found." : "বিজ্ঞাপনটি পাওয়া যায়নি।"
+  }</p><a class="back-btn" href="ads.html">${
+   english ? "Back to Ads" : "বিজ্ঞাপনের তালিকায় ফিরে যান"
+  }</a>`;
+  return;
+ }
+
+ const category = categoryName(data.category);
+
+ content.innerHTML = `
+  <div class="detail">
+   <h2>${escapeHTML(data.product_name)}</h2>
+
+   <p class="price">৳ ${escapeHTML(data.price)} / ${
+    english ? "unit" : "প্রতি ইউনিট"
+   }</p>
+
+   <div class="info">
+    <strong>${english ? "Category:" : "ক্যাটাগরি:"}</strong>
+    ${escapeHTML(category[english ? 1 : 0])}
+   </div>
+
+   <div class="info">
+    <strong>${english ? "Quantity:" : "পরিমাণ:"}</strong>
+    ${escapeHTML(data.quantity)}
+   </div>
+
+   <div class="info">
+    <strong>${english ? "Farm / Shop Name:" : "খামার / দোকানের নাম:"}</strong>
+    ${escapeHTML(data.farm_name)}
+   </div>
+
+   <div class="info">
+    <strong>${english ? "District:" : "জেলা:"}</strong>
+    ${escapeHTML(data.district)}
+   </div>
+
+   <div class="info">
+    <strong>${english ? "Area:" : "এলাকা:"}</strong>
+    ${escapeHTML(data.area)}
+   </div>
+
+   <div class="info">
+    <strong>${english ? "Phone Number:" : "ফোন নম্বর:"}</strong>
+    ${escapeHTML(data.phone)}
+   </div>
+
+   <div class="info">
+    <strong>${english ? "WhatsApp Number:" : "WhatsApp নম্বর:"}</strong>
+    ${escapeHTML(data.whatsapp)}
+   </div>
+
+   <div class="info">
+    <strong>${english ? "Advertisement Details:" : "বিজ্ঞাপনের বিস্তারিত:"}</strong>
+    <p>${escapeHTML(data.description)}</p>
+   </div>
+
+   <div style="margin-top:15px">
+    ${contactButtons(data)}
+   </div>
+  </div>
+
+  <a class="back-btn" href="ads.html">${
+   english ? "← Back to All Advertisements" : "← সকল বিজ্ঞাপনে ফিরে যান"
+  }</a>
+ `;
 }
 
 async function loadAds() {
@@ -207,17 +309,29 @@ function changeLang() {
   options[i].text = english ? en[i] : bn[i];
  }
 
- filterAds();
+ const params = new URLSearchParams(window.location.search);
+ const id = params.get("id");
+
+ if(id) {
+  showDetails(id);
+ } else {
+  filterAds();
+ }
 }
 
 const params = new URLSearchParams(window.location.search);
+const detailId = params.get("id");
 const initialSearch = params.get("search");
 
 if(initialSearch) {
  document.getElementById("search").value = initialSearch;
 }
 
-loadAds();
+if(detailId) {
+ showDetails(detailId);
+} else {
+ loadAds();
+}
 </script>
 
 </body>
