@@ -5,6 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>কোয়েল বাজার | QUAIL BAZAR</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f4f7f4;color:#222}
@@ -24,8 +27,18 @@ h2{padding:0 15px;font-size:20px}
 .post{display:block;background:#176b3a;color:white;margin:15px;padding:15px;text-align:center;text-decoration:none;border-radius:8px;font-weight:bold}
 .info{background:white;margin:15px;padding:15px;border-radius:10px;line-height:1.6}
 footer{text-align:center;padding:20px;color:#666}
+#adsList{padding:12px}
+.ad-card{background:white;padding:15px;margin-bottom:14px;border-radius:10px;box-shadow:0 2px 7px #ddd}
+.ad-card h3{color:#176b3a;margin-top:0}
+.ad-card p{margin:7px 0;overflow-wrap:anywhere}
+.ad-actions{display:flex;gap:8px;margin-top:12px}
+.ad-actions a{flex:1;text-align:center;text-decoration:none;color:white;background:#176b3a;padding:11px 5px;border-radius:7px;font-size:14px}
+.ad-actions .wa{background:#168b50}
+#loading{text-align:center;padding:20px}
+.empty{text-align:center;background:white;padding:20px;border-radius:10px}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -55,6 +68,11 @@ footer{text-align:center;padding:20px;color:#666}
 
 <a class="post" href="post-ad.html" id="postBtn">＋ বিজ্ঞাপন দিন</a>
 
+<h2 id="adsTitle">সাম্প্রতিক বিজ্ঞাপন</h2>
+
+<div id="loading">বিজ্ঞাপন লোড হচ্ছে...</div>
+<div id="adsList"></div>
+
 <div class="info">
 <h3 id="aboutTitle">কোয়েল বাজার কী?</h3>
 <p id="aboutText">এখানে বাংলাদেশের কোয়েল খামারি, ক্রেতা ও বিক্রেতারা সরাসরি যোগাযোগ করতে পারবেন।</p>
@@ -63,42 +81,191 @@ footer{text-align:center;padding:20px;color:#666}
 <footer>QUAIL BAZAR © 2026</footer>
 
 <script>
-let english=false;
+let english = false;
+let allAds = [];
 
-function changeLang(){
-english=!english;
+const SUPABASE_URL = "https://xvawrgfrzfgkolaetnsw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_fgvGkn8TpONnZtcLfsY4tg_ejqsGoRc";
 
-document.getElementById('langBtn').innerText=english?'বাংলা':'English';
-document.getElementById('welcome').innerText=english?'Welcome to Bangladesh Quail Market':'বাংলাদেশের কোয়েল বাজারে স্বাগতম';
-document.getElementById('catTitle').innerText=english?'Product Categories':'পণ্যের ক্যাটাগরি';
-document.getElementById('c1').innerText=english?'Live Quail':'জীবিত কোয়েল';
-document.getElementById('c2').innerText=english?'Quail Chicks':'কোয়েল বাচ্চা';
-document.getElementById('c3').innerText=english?'Quail Eggs':'কোয়েলের ডিম';
-document.getElementById('c4').innerText=english?'Quail Feed':'কোয়েল খাবার';
-document.getElementById('c5').innerText=english?'Farm Equipment':'খামারের সরঞ্জাম';
-document.getElementById('postBtn').innerText=english?'+ Post an Ad':'＋ বিজ্ঞাপন দিন';
-document.getElementById('aboutTitle').innerText=english?'About Quail Bazar':'কোয়েল বাজার কী?';
-document.getElementById('aboutText').innerText=english?'A marketplace connecting quail farmers, buyers and sellers directly.':'এখানে বাংলাদেশের কোয়েল খামারি, ক্রেতা ও বিক্রেতারা সরাসরি যোগাযোগ করতে পারবেন।';
-document.getElementById('search').placeholder=english?'Search products or ads...':'পণ্য বা বিজ্ঞাপন খুঁজুন...';
-document.getElementById('searchBtn').innerText=english?'🔍 Search':'🔍 খুঁজুন';
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, function(char) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[char];
+  });
 }
 
-function searchAds(){
-const keyword=document.getElementById('search').value.trim();
+function categoryName(value) {
+  const names = {
+    "Live quail": english ? "Live Quail" : "জীবিত কোয়েল",
+    "Chicks": english ? "Quail Chicks" : "কোয়েল বাচ্চা",
+    "Eggs": english ? "Quail Eggs" : "কোয়েলের ডিম",
+    "Feed": english ? "Quail Feed" : "কোয়েল খাবার",
+    "Equipment": english ? "Farm Equipment" : "খামারের সরঞ্জাম"
+  };
 
-if(!keyword){
-alert(english?'Please enter a search word.':'আগে কিছু লিখুন।');
-return;
+  return names[value] || escapeHTML(value);
 }
 
-window.location.href='ads.html?search='+encodeURIComponent(keyword);
+function renderAds(ads) {
+  const list = document.getElementById("adsList");
+
+  if (!ads.length) {
+    list.innerHTML = `
+      <div class="empty">
+        ${english ? "No advertisements found." : "এখনো কোনো বিজ্ঞাপন পাওয়া যায়নি।"}
+      </div>
+    `;
+    return;
+  }
+
+  list.innerHTML = ads.map(ad => {
+    const phone = String(ad.phone || "").replace(/[^\d+]/g, "");
+    const whatsapp = String(ad.whatsapp || ad.phone || "").replace(/\D/g, "");
+
+    const price = ad.price !== null && ad.price !== ""
+      ? escapeHTML(ad.price) + (english ? " BDT" : " টাকা")
+      : (english ? "Contact for price" : "দাম জানতে যোগাযোগ করুন");
+
+    return `
+      <div class="ad-card">
+        <h3>${escapeHTML(ad.product_name)}</h3>
+
+        <p><b>${english ? "Category:" : "বিভাগ:"}</b>
+        ${categoryName(ad.category)}</p>
+
+        <p><b>${english ? "Farm/Shop:" : "খামার/দোকান:"}</b>
+        ${escapeHTML(ad.farm_name)}</p>
+
+        <p><b>${english ? "Quantity:" : "পরিমাণ:"}</b>
+        ${escapeHTML(ad.quantity || "-")}</p>
+
+        <p><b>${english ? "Price:" : "দাম:"}</b>
+        ${price}</p>
+
+        <p><b>${english ? "Location:" : "ঠিকানা:"}</b>
+        ${escapeHTML(ad.area || "")}
+        ${escapeHTML(ad.district || "")}</p>
+
+        <p><b>${english ? "Details:" : "বিবরণ:"}</b>
+        ${escapeHTML(ad.description || "-")}</p>
+
+        <div class="ad-actions">
+          ${phone ? `<a href="tel:${encodeURIComponent(phone)}">${english ? "Call" : "📞 কল করুন"}</a>` : ""}
+          ${whatsapp ? `<a class="wa" href="https://wa.me/${whatsapp}" target="_blank" rel="noopener noreferrer">${english ? "WhatsApp" : "WhatsApp"}</a>` : ""}
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
-document.getElementById('search').addEventListener('keydown',function(e){
-if(e.key==='Enter'){
-searchAds();
+async function loadAds() {
+  const loading = document.getElementById("loading");
+
+  loading.textContent = english
+    ? "Loading advertisements..."
+    : "বিজ্ঞাপন লোড হচ্ছে...";
+
+  try {
+    const { data, error } = await db
+      .from("ads")
+      .select("*")
+      .eq("status", "approved");
+
+    if (error) throw error;
+
+    allAds = data || [];
+
+    loading.style.display = "none";
+    renderAds(allAds);
+
+  } catch (error) {
+    loading.textContent = (english
+      ? "Could not load advertisements: "
+      : "বিজ্ঞাপন লোড করা যায়নি: ") + error.message;
+  }
 }
+
+function searchAds() {
+  const keyword = document.getElementById("search").value.trim().toLowerCase();
+
+  if (!keyword) {
+    renderAds(allAds);
+    return;
+  }
+
+  const filtered = allAds.filter(ad => {
+    const text = [
+      ad.product_name,
+      ad.farm_name,
+      ad.category,
+      ad.district,
+      ad.area,
+      ad.description
+    ].join(" ").toLowerCase();
+
+    return text.includes(keyword);
+  });
+
+  renderAds(filtered);
+}
+
+document.getElementById("search").addEventListener("input", searchAds);
+
+document.getElementById("search").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") searchAds();
 });
+
+function changeLang() {
+  english = !english;
+
+  document.getElementById("langBtn").innerText = english ? "বাংলা" : "English";
+
+  document.getElementById("welcome").innerText = english
+    ? "Welcome to Bangladesh Quail Market"
+    : "বাংলাদেশের কোয়েল বাজারে স্বাগতম";
+
+  document.getElementById("catTitle").innerText = english
+    ? "Product Categories" : "পণ্যের ক্যাটাগরি";
+
+  document.getElementById("c1").innerText = english ? "Live Quail" : "জীবিত কোয়েল";
+  document.getElementById("c2").innerText = english ? "Quail Chicks" : "কোয়েল বাচ্চা";
+  document.getElementById("c3").innerText = english ? "Quail Eggs" : "কোয়েলের ডিম";
+  document.getElementById("c4").innerText = english ? "Quail Feed" : "কোয়েল খাবার";
+  document.getElementById("c5").innerText = english ? "Farm Equipment" : "খামারের সরঞ্জাম";
+
+  document.getElementById("postBtn").innerText = english
+    ? "+ Post an Ad" : "＋ বিজ্ঞাপন দিন";
+
+  document.getElementById("adsTitle").innerText = english
+    ? "Latest Advertisements" : "সাম্প্রতিক বিজ্ঞাপন";
+
+  document.getElementById("aboutTitle").innerText = english
+    ? "About Quail Bazar" : "কোয়েল বাজার কী?";
+
+  document.getElementById("aboutText").innerText = english
+    ? "A marketplace connecting quail farmers, buyers and sellers directly."
+    : "এখানে বাংলাদেশের কোয়েল খামারি, ক্রেতা ও বিক্রেতারা সরাসরি যোগাযোগ করতে পারবেন।";
+
+  document.getElementById("search").placeholder = english
+    ? "Search products or ads..." : "পণ্য বা বিজ্ঞাপন খুঁজুন...";
+
+  document.getElementById("searchBtn").innerText = english
+    ? "🔍 Search" : "🔍 খুঁজুন";
+
+  renderAds(allAds);
+}
+
+loadAds();
 </script>
 
 </body>
