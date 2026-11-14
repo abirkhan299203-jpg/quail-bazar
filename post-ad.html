@@ -89,7 +89,6 @@ button:disabled {
 <script>
 const SUPABASE_URL = "https://xvawrgfrzfgkolaetnsw.supabase.co";
 
-// এখানে তোমার Supabase Publishable Key বসানো হয়েছে
 const SUPABASE_KEY = "sb_publishable_fgvGkn8TpONnZtcLfsY4tg_ejqsGoRc";
 
 const db = window.supabase.createClient(
@@ -117,7 +116,10 @@ document.getElementById("adForm").addEventListener("submit", async function(e) {
       area: document.getElementById("area").value.trim(),
       phone: document.getElementById("phone").value.trim(),
       whatsapp: document.getElementById("whatsapp").value.trim(),
-      description: document.getElementById("description").value.trim()
+      description: document.getElementById("description").value.trim(),
+
+      // AUTO APPROVAL
+      status: "approved"
     };
 
     const { error } = await db.from("ads").insert([ad]);
@@ -127,7 +129,7 @@ document.getElementById("adForm").addEventListener("submit", async function(e) {
     }
 
     message.textContent =
-      "বিজ্ঞাপন জমা হয়েছে। অনুমোদনের অপেক্ষায় থাকবে।";
+      "সফল! আপনার বিজ্ঞাপন Approved হয়েছে।";
 
     document.getElementById("adForm").reset();
 
